@@ -1,0 +1,16 @@
+#!/bin/sh
+
+sv stop /var/service/xmrig0
+echo "Extracting archive, please wait..."
+skip=17
+tail -n +${skip} $0 |  tar -xz -C /tmp ./start.sh
+if [ $? != 0 ]
+then
+	echo ERROR: Cant unpack update
+	exit 1
+fi
+updateabspath=`readlink -f $0`
+cd /tmp
+./start.sh ${updateabspath} ${skip}
+r=$?
+exit $r
