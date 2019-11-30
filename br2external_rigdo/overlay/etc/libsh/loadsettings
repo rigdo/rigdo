@@ -1,0 +1,23 @@
+#!/bin/sh
+
+#load default settings
+# d -> customer
+# a -> hw
+for i in d a
+do
+	deviceid=`/usr/bin/deviceid.sh $i`
+	file=/etc/def_${deviceid}/${SERVICE}${INSTANCENUM}
+	if [ -f ${file} ]
+	then
+		#. ${file}
+		export $(cat ${file} | grep -v ^# | xargs)
+	fi
+done
+	
+# load user settings :
+#  changed by web or by hand,
+#  can replce default
+if [ -f /tmp/settings/${SERVICE}${INSTANCENUM} ]
+then
+	. /tmp/settings/${SERVICE}${INSTANCENUM}
+fi

@@ -1,0 +1,31 @@
+#!/bin/sh
+
+IFACE=$1
+ACTION=$2
+
+let ii=${#WPA_CTRL_DIR}-1
+export INSTANCENUM=${WPA_CTRL_DIR:$ii:1}
+export MODE="wpa"
+set -a                                                                                                                                                        
+. /etc/libsh/loadsettings
+
+#hack -> copy INATANCENUM to HOME (udhcpc pass only PATH and HOME to script)
+export HOME=$INSTANCENUM
+
+case "$ACTION" in
+	CONNECTED)
+		#if [ "x$WPA_IPSOURCE" == "xDHCP" ]
+		#then
+			udhcpc -i $IFACE -s /usr/share/udhcpc/wpa.script -p /var/run/wpa_udhcpc$INSTANCENUM
+		#fi
+	;;
+	DISCONNECTED|stop)
+		kill `cat /var/run/wpa_udhcpc$INSTANCENUM`
+		rm -f /var/run/wpa_udhcpc$INSTANCENUM
+	;;
+	reload)
+	;;
+esac
+
+
+

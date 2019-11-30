@@ -1,0 +1,101 @@
+#!/bin/sh
+
+exec 2>&1
+ 
+export SERVICE=wpa                                                            
+export INSTANCENUM=`cat instancenum`
+set -a                                                                                                                                                        
+. /etc/libsh/loadsettings
+
+echo
+echo "Starting with parameters:"
+echo
+env | grep "WPA_"
+echo
+
+rm -f /etc/wpa_supplicant.conf
+touch /etc/wpa_supplicant.conf
+
+#if [ "$WPA_CTRL_INTERFACE" != "" ]; then
+    ctrl_interface=/var/run/wpa_supplicant$INSTANCENUM
+    echo "ctrl_interface=$ctrl_interface" >> /etc/wpa_supplicant.conf
+    #echo "ctrl_interface=$WPA_CTRL_INTERFACE" >> /etc/wpa_supplicant.conf
+#fi
+if [ "$WPA_EAPOL_VERSION" != "" ]; then
+    #eapol_version=1(2)
+    echo "eapol_version=$WPA_EAPOL_VERSION" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_AP_SCAN" != "" ]; then
+    #ap_scan=1(0,2)
+    echo "ap_scan=$WPA_AP_SCAN" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_FAST_REAUTH" != "" ]; then
+    #fast_reauth=1(0)
+    echo "fast_reauth=$WPA_FAST_REAUTH" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_COUNTRY" != "" ]; then
+    #country=US
+    echo "country=$WPA_COUNTRY" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_UUID" != "" ]; then
+    #uuid=mac
+    echo "uuid=$WPA_UUID" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_AUTOSCAN" != "" ]; then
+    #autoscan=periodic:30
+    #autoscan=exponential:3:300
+    echo "autoscan=$WPA_AUTOSCAN" >> /etc/wpa_supplicant.conf
+fi
+
+echo "network={" >> /etc/wpa_supplicant.conf
+
+if [ "$WPA_SSID" != "" ]; then
+    echo "ssid=\"$WPA_SSID\"" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_SCAN_SSID" != "" ]; then
+    echo "scan_ssid=$WPA_SCAN_SSID" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_KEY_MGMT" != "" ]; then
+    echo "key_mgmt=$WPA_KEY_MGMT" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_PROTO" != "" ]; then
+    echo "proto=$WPA_PROTO" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_PAIRWISE" != "" ]; then
+    echo "pairwise=$WPA_PAIRWISE" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_GROUP" != "" ]; then
+    echo "group=$WPA_GROUP" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_PSK" != "" ]; then
+    echo "psk=\"$WPA_PSK\"" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_FREQUENCY" != "" ]; then
+    echo "frequency=$WPA_FREQUENCY" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_BSSID" != "" ]; then
+    echo "bssid=$WPA_BSSID" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_EAP" != "" ]; then
+    echo "eap=$WPA_EAP" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_PASSWORD" != "" ]; then
+    echo "password=\"$WPA_PASSWORD\"" >> /etc/wpa_supplicant.conf
+fi
+if [ "$WPA_IDENTITY" != "" ]; then
+    echo "identity=$WPA_IDENTITY" >> /etc/wpa_supplicant.conf
+fi
+
+echo "}" >> /etc/wpa_supplicant.conf
+
+
+# not load system if no wifi device
+sleep 3
+
+if [ "$WPA_NETWORK_WLAN0_IP" != "" ]; then
+    if [ "$WPA_NETWORK_WLAN0_NETMASK" != "" ]; then
+	ifconfig wlan0 $WPA_NETWORK_WLAN0_IP netmask $WPA_NETWORK_WLAN0_NETMASK
+    fi
+fi
+
+exec /usr/sbin/wpa_supplicant -Dnl80211 -iwlan0 -c /etc/wpa_supplicant.conf

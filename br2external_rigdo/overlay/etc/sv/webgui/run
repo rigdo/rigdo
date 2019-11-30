@@ -1,0 +1,23 @@
+#!/bin/sh
+
+exec 2>&1
+
+export SERVICE=webgui
+export INSTANCENUM=`cat instancenum`
+. /etc/libsh/loadsettings
+
+
+#set default values
+export WEBGUI_OPTS=${WEBGUI_OPTS:-"--docroot /home/http --http-address 0.0.0.0 --threads 1 --no-compression"}
+
+echo
+echo "Starting with parameters:"
+echo
+env | grep "WEBGUI_"
+echo
+
+# set stack size to 1024Kb (default 8192Kb)
+ulimit -s 1024
+
+exec /root/localgui ${WEBGUI_OPTS}
+

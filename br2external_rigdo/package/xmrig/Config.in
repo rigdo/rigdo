@@ -1,0 +1,5 @@
+config BR2_PACKAGE_XMRIG
+	bool "xmrig"
+	depends on BR2_PACKAGE_LIBUV
+	help
+	  Monero (XMR) CPU miner

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+exec 2>&1
+
+export SERVICE=wpa_cli                                                            
+export INSTANCENUM=`cat instancenum`
+set -a                                                                                                                                                        
+. /etc/libsh/loadsettings
+
+echo
+echo "Starting with parameters:"
+echo
+env | grep "WPA_CLI_"
+echo
+
+ctrl_interface=/var/run/wpa_supplicant$INSTANCENUM
+
+# not load system if no wifi device
+sleep 3
+# for get notify about associate
+/usr/sbin/wpa_cli -p $ctrl_interface reassociate
+exec /usr/sbin/wpa_cli -p $ctrl_interface -a /usr/sbin/wpa_cli.script

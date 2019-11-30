@@ -1,0 +1,5 @@
+config BR2_PACKAGE_ETHMINER
+	bool "ethminer"
+	depends on BR2_PACKAGE_LIBUV
+	help
+	  Etherium  OpenCL/CUDA GPU miner

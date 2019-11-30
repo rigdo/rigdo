@@ -1,0 +1,35 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1e644e9..e6037a2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -43,10 +43,7 @@ if (ROCM_CCACHE_BUILD)
+   endif() # if (CCACHE_PROGRAM)
+ endif() # if (ROCM_CCACHE_BUILD)
+ 
+-## Set default module path if not already set
+-if ( NOT DEFINED CMAKE_MODULE_PATH )
+-    set ( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/" )
+-endif ()
++list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/")
+ 
+ ## Include common cmake modules
+ include ( utils )
+@@ -116,6 +113,7 @@ include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/src )
+ add_library ( ${HSAKMT_TARGET} SHARED ${HSAKMT_SRC} )
+ target_compile_options(${HSAKMT_TARGET} PRIVATE ${HSAKMT_C_FLAGS})
+ set_property(TARGET ${HSAKMT_TARGET} PROPERTY LINK_FLAGS ${HSAKMT_LINK_FLAGS})
++set_target_properties(${HSAKMT_TARGET} PROPERTIES PUBLIC_HEADER "include/hsakmt.h;include/hsakmttypes.h")
+ 
+ ## Set the VERSION and SOVERSION values
+ set_property ( TARGET ${HSAKMT_TARGET} PROPERTY VERSION "${LIB_VERSION_STRING}" )
+@@ -155,7 +153,9 @@ add_custom_target ( package-dev DEPENDS build-dev
+     WORKING_DIRECTORY ${DEV_BUILD_DIR} )
+ 
+ ## Add the install directives for the runtime library.
+-install ( TARGETS ${HSAKMT_TARGET} DESTINATION ${CMAKE_INSTALL_LIBDIR} )
++install ( TARGETS ${HSAKMT_TARGET}
++		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++		PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libhsakmt )
+ install ( FILES ${SOURCE_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_DOCDIR} )
+ 
+ ## Add the packaging directives for the runtime library.

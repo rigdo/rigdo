@@ -1,0 +1,43 @@
+#!/bin/sh
+
+exec 2>&1
+
+export SERVICE=links
+export INSTANCENUM=`cat instancenum`
+. /etc/libsh/loadsettings
+
+if [ "$1" = "tty" ];then
+	LINKS_BIND_TTY=""
+else
+	LINKS_BIND_TTY=$INSTANCENUM
+fi
+
+if [ "$LINKS_BIND_TTY" != "" ]; then
+	sv stop console${LINKS_BIND_TTY}
+	rm -f /var/service/console${LINKS_BIND_TTY}
+	t=/dev/tty${LINKS_BIND_TTY}
+	exec <$t >$t 2>&1 || exit 1
+	#reset
+	stty sane
+	/usr/sbin/setfont -C $t /usr/share/consolefonts/Uni2-Fixed16.psf.gz
+fi
+
+while ! nc 127.0.0.1 80 -w 1 ; do
+	echo "wait webgui up..."
+	sleep 1
+done
+
+echo
+echo "Params from config:"
+echo
+set | grep "LINKS_"
+echo
+
+url=${LINKS_URL:-"http://127.0.0.1"}
+lang=${LINKS_LANG:-"ru_RU.UTF-8"}
+
+export LANG=$lang
+export HOME=/root
+
+exec /usr/bin/links $url
+

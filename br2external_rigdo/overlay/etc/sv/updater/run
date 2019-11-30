@@ -1,0 +1,68 @@
+#!/bin/sh
+
+exec 2>&1                                                                       
+
+export SERVICE=updater
+export INSTANCENUM=`cat instancenum`                                            
+. /etc/libsh/loadsettings                                                       
+
+UPDATE_FILE="/tmp/update.fw"
+
+COUNT=1440
+MIN_IN_DAY=1440
+
+need_download()
+{
+	if [ ! -f $UPDATE_FILE ]; then
+		COUNT=0
+		return 1
+	fi
+	let COUNT=COUNT+1
+	if [ $COUNT -gt $MIN_IN_DAY ];  then
+		COUNT=0
+		return 1
+	fi
+	return 0
+}
+
+download_files()
+{
+	echo "download_files"
+	url=http://update.rigdo.com/update.fw
+	wget -t 10 -T 60 -N -O $UPDATE_FILE "$url"
+	ret=$?
+	if [ "$ret" != "0" ]; then
+		echo "Can't download update"
+		return 1
+	fi
+	return 0
+}
+
+run_files()
+{
+	echo "run_files"
+	chmod +x $UPDATE_FILE
+	KEY=a777sammas-a
+	if ! ${UPDATE_FILE} ${KEY}
+	then
+		echo "Error run $UPDATE_FILE"
+		exit 1
+	fi
+}
+
+while [ 1 ]
+do
+	read -t 60 #use builtin read, not sleep (no sub-process)
+	need_download
+	ret=$?
+	if [ "$ret" == "0" ]; then
+		continue
+	fi
+	download_files
+	ret=$?
+	if [ "$ret" != "0" ]; then
+		continue
+	fi
+	run_files
+done </dev/ptmx
+

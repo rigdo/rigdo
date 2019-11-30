@@ -1,0 +1,15 @@
+#!/bin/sh
+
+export INSTANCENUM=`cat instancenum`
+if [ -f  /tmp/name_server_wlan$INSTANCENUM ]
+then
+    rm /tmp/name_server_wlan$INSTANCENUM
+fi
+
+if [ "x$WPA_GW_DHCP" != "xfalse" ] 
+then
+	while route del default gw 0.0.0.0 dev wlan$INSTANCENUM ; do
+		:
+	done
+
+fi

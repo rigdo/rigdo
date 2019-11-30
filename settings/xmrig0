@@ -1,0 +1,6 @@
+AUTOSTART=0
+XMRIG_BIND_TTY='2'
+XMRIG_POOL='randomx-benchmark.xmrig.com:7777'
+XMRIG_ALGO='rx/0'
+XMRIG_DONATE='1'
+

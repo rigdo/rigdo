@@ -1,0 +1,9 @@
+config BR2_PACKAGE_OCLICD
+	bool "oclicd"
+	select BR2_PACKAGE_MESA3D_HEADERS
+	select BR2_PACKAGE_HAS_LIBOPENCL
+	help
+	  ocl icd loader
+
+config BR2_PACKAGE_PROVIDES_LIBOPENCL
+    default "oclicd" if BR2_PACKAGE_OCLICD

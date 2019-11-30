@@ -1,0 +1,11 @@
+--- xmrig-proxy-3.2.1/CMakeLists.txt.orig	2019-11-10 19:35:07.451971818 +0300
++++ xmrig-proxy-3.2.1/CMakeLists.txt	2019-11-10 19:35:20.188128055 +0300
+@@ -141,7 +141,7 @@
+     if (CMAKE_SYSTEM_NAME STREQUAL FreeBSD)
+         set(EXTRA_LIBS pthread)
+     else()
+-        set(EXTRA_LIBS pthread uuid.a rt dl)
++        set(EXTRA_LIBS pthread uuid rt dl)
+     endif()
+ endif()
+ 

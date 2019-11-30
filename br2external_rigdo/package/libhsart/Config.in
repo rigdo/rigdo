@@ -1,0 +1,7 @@
+config BR2_PACKAGE_LIBHSART
+	bool "libhsakmt"
+	depends on BR2_PACKAGE_ELFUTILS
+	depends on BR2_PACKAGE_LIBHSAKMT
+	help
+	  rocm: ROCR-Runtime
+	  https://github.com/RadeonOpenCompute/ROCR-Runtime.git

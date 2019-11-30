@@ -1,0 +1,55 @@
+#!/bin/sh
+
+#mount all in fstab (/proc, /sys, /tmp ...)
+mount -a
+
+#save boot log
+exec >/tmp/boot.log
+exec 2>&1
+
+echo Initializing system...
+
+# Saving last 128K of kernel log:
+dmesg -s 131072 >/tmp/dmesg.log
+
+#wait 5 sec for usb flash detected by linux
+sleep 5
+# mount /mnt/store (get access to /mnt/store/preup.sh and /mnt/store/settings/)
+mount -o sync LABEL=RIGBOOT /mnt/store
+
+if [ -f /mnt/store/preup.sh ]
+then
+	echo "run /mnt/store/preup.sh"
+	. /mnt/store/preup.sh
+else
+    echo "file /mnt/store/preup.sh not found"
+fi
+
+#get settings
+#preup.sh can set own /tmp/settings
+if [ ! -e /tmp/settings ]
+then
+	if [ ! -d /mnt/store/settings ]
+	then
+		echo "no settings found"
+		mkdir -p /mnt/store/settings/
+	else
+		echo "use settings from /mnt/store/settings"
+	fi
+	ln -s /mnt/store/settings /tmp/settings
+fi
+
+echo "Setting up kernel settings"
+/etc/init/rc.kernel
+
+echo "Setting up userspace settings"
+/etc/init/rc.userspace
+
+if [ -f /mnt/store/postup.sh ]
+then
+	echo "run /mnt/store/postup.sh"
+	. /mnt/store/postup.sh
+else
+    echo "file /mnt/store/postup.sh not found"
+fi
+

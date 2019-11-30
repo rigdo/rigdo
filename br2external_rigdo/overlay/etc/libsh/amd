@@ -1,0 +1,17 @@
+
+amd_load_drv()
+{
+	vt_mode_before=`dd if=/dev/vcsa1 bs=2 count=1 2>/dev/null| md5sum`
+	modprobe amdgpu
+	sleep 1
+	vt_mode_after=`dd if=/dev/vcsa1 bs=2 count=1 2>/dev/null| md5sum`
+	if [ "$vt_mode_before" != "$vt_mode_after" ]; then
+		#hack for fonts in links
+		sv restart /var/service/links*
+	fi
+
+	#set speed
+	if [ -f /mnt/store/amd_postup.sh ]; then
+		. /mnt/store/amd_postup.sh
+	fi
+}

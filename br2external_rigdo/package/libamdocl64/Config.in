@@ -1,0 +1,9 @@
+config BR2_PACKAGE_LIBAMDOCL64
+	bool "libamdocl64"
+	select BR2_PACKAGE_MESA3D_HEADERS
+	select BR2_PACKAGE_HAS_LIBOPENCL
+	help
+	  amd rocm opencl
+
+config BR2_PACKAGE_PROVIDES_LIBOPENCL
+    default "libamdocl64" if BR2_PACKAGE_LIBAMDOCL64

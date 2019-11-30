@@ -1,0 +1,73 @@
+#!/bin/sh
+
+exec 2>&1
+
+export SERVICE=xmrig-nvidia
+export INSTANCENUM=`cat instancenum`
+. /etc/libsh/loadsettings
+. /etc/libsh/nvidia
+
+if [ "$1" = "tty" ];then
+	XMRIG_BIND_TTY=""
+fi
+if [ "$XMRIG_BIND_TTY" != "" ]; then
+	sv stop console${XMRIG_BIND_TTY}
+	rm -f /var/service/console${XMRIG_BIND_TTY}
+	t=/dev/tty${XMRIG_BIND_TTY}
+	exec <$t >$t 2>&1 || exit 1
+	#reset
+	stty sane
+fi
+
+echo
+echo "Params from config:"
+echo
+set | grep "XMRIG_"
+echo
+
+#opts="--no-color "
+opts=""
+
+pool="${XMRIG_POOL:-xmr-eu.dwarfpool.com:8080}"
+opts="${opts} -o ${pool}"
+
+user="${XMRIG_USER:-45v1SBynnRMKxz3faNASnR2GiEc1TDbFgcZym94VuaJkCMSRsw66VxGRXHtDSHw84eYrW4HtPHcxCc3sP29SNDcnGB5PvXh}"
+opts="${opts} -u ${user}"
+
+if [ "${XMRIG_PASS}" != "" ]; then
+	opts="${opts} -p ${XMRIG_PASS}"
+fi
+
+if [ "${XMRIG_ALGO}" != "" ]; then
+	opts="${opts} -a ${XMRIG_ALGO}"
+fi
+
+if [ "${XMRIG_CUDA_LAUNCH}" != "" ]; then
+	opts="${opts} --cuda-launch ${XMRIG_CUDA_LAUNCH}"
+fi
+
+nicehash_mode=${XMRIG_NICEHASH_MODE:-auto}
+if [ "${nicehash_mode}" = "auto" ]; then
+	case "$pool" in
+		*nicehash*) nicehash_mode=on;;
+	esac
+fi
+if [ "${nicehash_mode}" = "on" ]; then
+	opts="${opts} --nicehash"
+fi
+
+if [ "${XMRIG_DONATE}" != "" ]; then
+	opts="${opts} --donate-level ${XMRIG_DONATE}"
+fi
+opts="${opts} ${XMRIG_TAIL_OPTS}"
+
+opts="--no-cpu --cuda ${opts} ${XMRIG_TAIL_OPTS}"
+
+echo "Start xmrig-nvidia with opts \"$opts\" after 3 sec"
+sleep 3
+
+nvidia_load_drv
+echo 1200 > /proc/sys/vm/nr_hugepages
+
+exec /root/xmrig ${opts}
+

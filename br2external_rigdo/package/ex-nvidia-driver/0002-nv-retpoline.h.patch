@@ -1,0 +1,18 @@
+--- ex-nvidia-driver-440.31/kernel/common/inc/nv-retpoline.h.orig	2019-10-27 05:33:10.000000000 +0300
++++ ex-nvidia-driver-440.31/kernel/common/inc/nv-retpoline.h	2019-11-14 09:30:58.240676821 +0300
+@@ -25,11 +25,11 @@
+ 
+ #include "cpuopsys.h"
+ 
+-#if (NV_SPECTRE_V2 == 0)
++//#if (NV_SPECTRE_V2 == 0)
+ #define NV_RETPOLINE_THUNK NV_SPEC_THUNK
+-#else
+-#define NV_RETPOLINE_THUNK NV_NOSPEC_THUNK
+-#endif
++//#else
++//#define NV_RETPOLINE_THUNK NV_NOSPEC_THUNK
++//#endif
+ 
+ #if defined(NVCPU_X86_64)
+ #define NV_REG_SP "rsp"

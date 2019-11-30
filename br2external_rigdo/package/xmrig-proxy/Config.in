@@ -1,0 +1,5 @@
+config BR2_PACKAGE_XMRIG_PROXY
+	bool "xmrig-proxy"
+	depends on BR2_PACKAGE_LIBUV
+	help
+	  XMRig Proxy

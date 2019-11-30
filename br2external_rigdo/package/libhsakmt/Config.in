@@ -1,0 +1,6 @@
+config BR2_PACKAGE_LIBHSAKMT
+	bool "libhsakmt"
+	depends on BR2_PACKAGE_NUMACTL
+	help
+	  rocm: ROCT-Thunk-Interface
+	  https://github.com/RadeonOpenCompute/ROCT-Thunk-Interface.git

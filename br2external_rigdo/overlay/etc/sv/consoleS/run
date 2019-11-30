@@ -1,0 +1,31 @@
+#!/bin/sh
+
+exec 2>&1
+
+export SERVICE=console
+export INSTANCENUM=`cat instancenum`
+. /etc/libsh/loadsettings
+
+#set default value
+def_dev=/dev/ttyS$INSTANCENUM
+if [ "$INSTANCENUM" = "0" -a "`grep 'console=' /proc/cmdline`" != "" ]; then
+	#try get from /proc/cmdline console=ttyS0,115200
+	nodename=`sed 's/.*console=\(tty[A-Za-z]\+[0-9]\+\).*/\1/' /proc/cmdline`
+	def_dev=/dev/$nodename
+fi
+export GETTY_DEVICE=${GETTY_DEVICE:-${def_dev}}
+export GETTY_SPEED=${GETTY_SPEED:-115200}
+
+echo
+echo "Starting with parameters:"
+echo
+env | grep "GETTY_"
+echo
+
+#wait device
+while ! stty -F $GETTY_DEVICE > /dev/null; do
+	echo "wait $GETTY_DEVICE ..."
+	read -t 60
+done < /dev/ptmx
+
+exec /sbin/getty -i -L $GETTY_SPEED $GETTY_DEVICE vt100

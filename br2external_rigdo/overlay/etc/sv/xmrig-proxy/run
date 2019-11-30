@@ -1,0 +1,68 @@
+#!/bin/sh
+
+exec 2>&1
+
+export SERVICE=xmrig-proxy
+export INSTANCENUM=`cat instancenum`
+. /etc/libsh/loadsettings
+
+if [ "$1" = "tty" ];then
+	XMRIG_PROXY_BIND_TTY=""
+fi
+if [ "$XMRIG_PROXY_BIND_TTY" != "" ]; then
+	sv stop console${XMRIG_PROXY_BIND_TTY}
+	rm -f /var/service/console${XMRIG_PROXY_BIND_TTY}
+	t=/dev/tty${XMRIG_PROXY_BIND_TTY}
+	exec <$t >$t 2>&1 || exit 1
+	#reset
+	stty sane
+fi
+
+echo
+echo "Params from config:"
+echo
+set | grep "XMRIG_PROXY_"
+echo
+
+#opts="--no-color "
+opts=""
+
+pool="${XMRIG_PROXY_POOL:-xmr-eu.dwarfpool.com:8080}"
+opts="${opts} -o ${pool}"
+
+user="${XMRIG_PROXY_USER:-45v1SBynnRMKxz3faNASnR2GiEc1TDbFgcZym94VuaJkCMSRsw66VxGRXHtDSHw84eYrW4HtPHcxCc3sP29SNDcnGB5PvXh}"
+opts="${opts} -u ${user}"
+
+if [ "${XMRIG_PROXY_PASS}" != "" ]; then
+	opts="${opts} -p ${XMRIG_PROXY_PASS}"
+fi
+
+if [ "${XMRIG_PROXY_ALGO}" != "" ]; then
+	opts="${opts} -a ${XMRIG_PROXY_ALGO}"
+fi
+
+nicehash_mode=${XMRIG_PROXY_NICEHASH_MODE:-auto}
+if [ "${nicehash_mode}" = "auto" ]; then
+	case "$pool" in
+		*nicehash*) nicehash_mode=on;;
+	esac 	
+fi
+if [ "${nicehash_mode}" = "on" ]; then
+	opts="${opts} --nicehash"
+fi
+
+if [ "${XMRIG_PROXY_DONATE}" != "" ]; then
+	opts="${opts} --donate-level ${XMRIG_PROXY_DONATE}"
+fi
+
+if [ "${XMRIG_PROXY_BIND}" != "" ]; then
+	opts="${opts} -b ${XMRIG_PROXY_BIND}" 
+fi
+
+opts="${opts} ${XMRIG_PROXY_TAIL_OPTS}"
+
+echo "Start xmrig-proxy with opts \"$opts\" after 3 sec"
+sleep 3
+
+exec /root/xmrig-proxy ${opts}
+

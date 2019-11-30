@@ -1,0 +1,51 @@
+#!/bin/sh
+
+exec 2>&1
+
+export SERVICE=ethminer-amd
+export INSTANCENUM=`cat instancenum`
+. /etc/libsh/loadsettings
+. /etc/libsh/amd
+
+
+if [ "$1" = "tty" ];then
+	ETHMINER_BIND_TTY=""
+fi
+if [ "$ETHMINER_BIND_TTY" != "" ]; then
+	#/usr/sbin/delservice.sh console${ETHMINER_BIND_TTY} > /dev/null
+	sv stop console${ETHMINER_BIND_TTY}
+	rm -f /var/service/console${ETHMINER_BIND_TTY}
+	t=/dev/tty${ETHMINER_BIND_TTY}
+	exec <$t >$t 2>&1 || exit 1
+	#reset
+	stty sane
+fi
+
+echo
+echo "Starting with parameters:"
+echo
+set | grep "ETHMINER_"
+echo
+
+opts="-G --HWMON 2 --report-hashrate"
+
+pool="${ETHMINER_POOL:-eu1.ethermine.org:4444}"
+wallet="${ETHMINER_WALLET:-0x00747e59ee64851ecb100d18f3d51878463c0f94}"
+worker="${ETHMINER_WORKER:-donate}"
+scheme=${ETHMINER_SCHEME:-'stratum+tcp'}
+
+if [ "${scheme}" = "http" ]; then
+    opts="${opts} -P ${scheme}://${pool}/${wallet}/${worker}"
+else
+    opts="${opts} -P ${scheme}://${wallet}.${worker}@${pool}"  
+fi
+opts="${opts} ${ETHMINER_TAIL_OPTS}"  
+
+echo "Start ethminer with opts \"$opts\" after 3 sec"
+sleep 3
+
+amd_load_drv
+
+export LD_LIBRARY_PATH=/opt/amdgpu/lib/x86_64-linux-gnu:/opt/amdgpu-pro/lib/x86_64-linux-gnu
+exec /root/ethminer ${opts}
+
