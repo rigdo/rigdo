@@ -8,5 +8,6 @@ Based on buildroot: https://buildroot.org/
 ## Build:
 ```
 git clone https://github.com/rigdo/rigdo.git
+cd rigdo
 make
 ```
