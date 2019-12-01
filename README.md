@@ -18,7 +18,7 @@ sudo dd if=usb_flash.img of=/dev/sdX bs=1M
 ## Build:
 rigdo based on buildroot: https://buildroot.org <br>
 
-1 instll dependencies: https://git.buildroot.net/buildroot/tree/docs/manual/prerequisite.txt : requirement-mandatory <br>
+1 install dependencies: https://git.buildroot.net/buildroot/tree/docs/manual/prerequisite.txt : requirement-mandatory <br>
 2 build rigdo:
 ```
 git clone https://github.com/rigdo/rigdo.git
