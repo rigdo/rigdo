@@ -1,15 +1,6 @@
 # rigdo
 Build bootable usb flash for mining <br>
-Based on buildroot: https://buildroot.org/
-  
-## Build:
-1 instll dependencies: https://git.buildroot.net/buildroot/tree/docs/manual/prerequisite.txt : requirement-mandatory <br>
-2 build rigdo:
-```
-git clone https://github.com/rigdo/rigdo.git
-cd rigdo
-make
-```
+
 ## Install
 ### UEFI supported in BIOS (modern comps)
 1 Download the latest version of "rigdo" https://github.com/rigdo/usb-flash-uefi/releases/latest  (rigdo_v0.xxx.zip, ~130 MB)<br>
@@ -23,4 +14,14 @@ https://youtu.be/PTh6mTiKNck
 Prebuilded image for old comp without uefi: http://update.rigdo.com/usb_flash.img
 ```
 sudo dd if=usb_flash.img of=/dev/sdX bs=1M
+```
+## Build:
+rigdo based on buildroot: https://buildroot.org <br>
+
+1 instll dependencies: https://git.buildroot.net/buildroot/tree/docs/manual/prerequisite.txt : requirement-mandatory <br>
+2 build rigdo:
+```
+git clone https://github.com/rigdo/rigdo.git
+cd rigdo
+make
 ```
