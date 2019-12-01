@@ -20,7 +20,7 @@ make
 https://youtu.be/PTh6mTiKNck
 
 ### UEFI not supported in BIOS(old comps)
-Prebuilded image for old comp without uefi: https://webgen.rigdo.com:webgen/usb_flash.img
+Prebuilded image for old comp without uefi: http://update.rigdo.com/usb_flash.img
 ```
 sudo dd if=usb_flash.img of=/dev/sdX bs=1M
 ```
