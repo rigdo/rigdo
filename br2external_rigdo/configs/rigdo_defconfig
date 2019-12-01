@@ -1,9 +1,9 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Buildroot 2019.08.1 Configuration
+# Buildroot 2019.08.1-gb1067a9 Configuration
 #
 BR2_HAVE_DOT_CONFIG=y
-BR2_EXTERNAL_rigdo_PATH="/home/bond/projects/ad_rigdo/try_2019/br2external_rigdo"
+BR2_EXTERNAL_rigdo_PATH="/home/bond/projects/ad_rigdo/github/rigdo/br2external_rigdo"
 BR2_HOST_GCC_AT_LEAST_4_5=y
 BR2_HOST_GCC_AT_LEAST_4_6=y
 BR2_HOST_GCC_AT_LEAST_4_7=y
@@ -969,7 +969,7 @@ BR2_PACKAGE_FLASHROM_ARCH_SUPPORTS=y
 # BR2_PACKAGE_MEMTESTER is not set
 # BR2_PACKAGE_MEMTOOL is not set
 # BR2_PACKAGE_MINICOM is not set
-# BR2_PACKAGE_MSR_TOOLS is not set
+BR2_PACKAGE_MSR_TOOLS=y
 # BR2_PACKAGE_NANOCOM is not set
 # BR2_PACKAGE_NEARD is not set
 # BR2_PACKAGE_NVIDIA_DRIVER is not set
@@ -3197,7 +3197,7 @@ BR2_LINUX_KERNEL_CUSTOM_GIT_VERSION=""
 #
 
 #
-# rigdo (in /home/bond/projects/ad_rigdo/try_2019/br2external_rigdo)
+# rigdo (in /home/bond/projects/ad_rigdo/github/rigdo/br2external_rigdo)
 #
 BR2_PACKAGE_LIBWT=y
 BR2_PACKAGE_LOCALGUI=y

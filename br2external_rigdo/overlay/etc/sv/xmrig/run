@@ -56,9 +56,20 @@ if [ "${XMRIG_DONATE}" != "" ]; then
 fi
 opts="${opts} ${XMRIG_TAIL_OPTS}"
 
+if [ "${XMRIG_ALGO:0:2}" = "rx" ]; then
+	echo "do configs for randomx"
+	#for intel
+	if grep -q -e nehalem -e westmere -e sandybridge -e ivybridge -e haswell -e broadwell /sys/devices/cpu/caps/pmu_name ; then
+		echo "force Intel MSR"
+		wrmsr -a 0x1a4 6
+	fi
+	echo 1200 > /proc/sys/vm/nr_hugepages
+else
+	#cryptonight variants
+	echo 128 > /proc/sys/vm/nr_hugepages
+fi
 echo "Start xmrig with opts \"$opts\" after 3 sec"
 sleep 3
 
-echo 1200 > /proc/sys/vm/nr_hugepages
 exec /root/xmrig ${opts}
 

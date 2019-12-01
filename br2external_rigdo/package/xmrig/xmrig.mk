@@ -4,7 +4,7 @@
 #
 #############################################################
 
-XMRIG_VERSION = 5.0.1
+XMRIG_VERSION = 5.1.0
 XMRIG_SITE = $(call github,xmrig,xmrig,v$(XMRIG_VERSION))
 
 XMRIG_DEPENDENCIES = libuv
