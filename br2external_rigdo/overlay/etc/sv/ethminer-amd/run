@@ -46,6 +46,14 @@ sleep 3
 
 amd_load_drv
 
-export LD_LIBRARY_PATH=/opt/amdgpu/lib/x86_64-linux-gnu:/opt/amdgpu-pro/lib/x86_64-linux-gnu
+#by default ETHMINER_OPENCL_MODE "rocm"?
+ETHMINER_OPENCL_MODE=${ETHMINER_OPENCL_MODE:-"amdgpu-pro"}
+if [ "${ETHMINER_OPENCL_MODE}" = "amdgpu-pro" ]; then
+	export LD_LIBRARY_PATH=/opt/amdgpu/lib/x86_64-linux-gnu:/opt/amdgpu-pro/lib/x86_64-linux-gnu
+fi
+if [ "${ETHMINER_OPENCL_MODE}" = "rocm" ]; then
+	export LD_LIBRARY_PATH=/opt/rocm/opencl/lib/x86_64
+fi
+
 exec /root/ethminer ${opts}
 

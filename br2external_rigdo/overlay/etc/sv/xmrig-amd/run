@@ -69,7 +69,15 @@ sleep 3
 #load drivers for AMD GPU
 amd_load_drv
 
-export LD_LIBRARY_PATH=/opt/amdgpu-pro/lib/x86_64-linux-gnu
+#by default ETHMINER_OPENCL_MODE "rocm"?
+XMRIG_OPENCL_MODE=${XMRIG_OPENCL_MODE:-"amdgpu-pro"}
+if [ "${XMRIG_OPENCL_MODE}" = "amdgpu-pro" ]; then
+	export LD_LIBRARY_PATH=/opt/amdgpu/lib/x86_64-linux-gnu:/opt/amdgpu-pro/lib/x86_64-linux-gnu
+fi
+if [ "${XMRIG_OPENCL_MODE}" = "rocm" ]; then
+	export LD_LIBRARY_PATH=/opt/rocm/opencl/lib/x86_64
+fi
+
 echo 1200 > /proc/sys/vm/nr_hugepages                                           
 
 exec /root/xmrig ${opts}
