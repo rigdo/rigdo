@@ -20,8 +20,7 @@ $(BRDIR)/output/images/bzImage: $(BRDIR)/.config
 $(BRDIR)/output/images/rootfs.cpio.gz: $(BRDIR)/.config
 	$(MAKE) -C $(BRDIR)
 
-# needed /sbin/mkfs.vfat and syslinux installed
-# syslinux == $(BRDIR)/output/build/syslinux-6.03/bios/linux/syslinux/syslinux-nomtools
+# needed /sbin/mkfs.vfat installed
 usb_flash.img: $(BRDIR)/output/images/rootfs.cpio.gz
 	dd if=/dev/zero bs=1M count=10 | cat - $(BRDIR)/output/images/bzImage $(BRDIR)/output/images/rootfs.cpio.gz > 2.dat #get needed size
 	/sbin/mkfs.vfat -n RIGBOOT 2.dat
