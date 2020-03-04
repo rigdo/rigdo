@@ -1,0 +1,14 @@
+--- librocmsmi-3.1.0/CMakeLists.txt.orig	2020-03-02 00:23:55.672654765 +0300
++++ librocmsmi-3.1.0/CMakeLists.txt	2020-03-02 00:26:34.122770948 +0300
+@@ -168,9 +168,9 @@
+ 
+ ## Add the install directives for the runtime library.
+ install(TARGETS ${ROCM_SMI_TARGET}
+-          LIBRARY DESTINATION ${ROCM_SMI}/lib COMPONENT ${ROCM_SMI_COMPONENT})
++          LIBRARY DESTINATION lib COMPONENT ${ROCM_SMI_COMPONENT})
+ install(FILES ${SOURCE_DIR}/include/rocm_smi/rocm_smi.h
+-                                        DESTINATION rocm_smi/include/rocm_smi)
++                                        DESTINATION include)
+ 
+ ## Add the packaging directives for the runtime library.
+ 

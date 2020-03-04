@@ -1,0 +1,5 @@
+config BR2_PACKAGE_LIBROCMSMI
+	bool "librocmsmi"
+	help
+	  ROCm System Management Interface (ROCm SMI) Library
+	  https://github.com/RadeonOpenCompute/rocm_smi_lib.git
