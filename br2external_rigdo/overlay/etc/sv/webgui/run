@@ -6,6 +6,10 @@ export SERVICE=webgui
 export INSTANCENUM=`cat instancenum`
 . /etc/libsh/loadsettings
 
+#for rocm_smi64 lib
+if [ ! -e /usr/share/pci.ids ]; then
+	gunzip /usr/share/pci.ids.gz
+fi
 
 #set default values
 export WEBGUI_OPTS=${WEBGUI_OPTS:-"--docroot /home/http --http-address 0.0.0.0 --threads 1 --no-compression"}
