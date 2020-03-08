@@ -1,0 +1,71 @@
+#!/bin/sh
+
+exec 2>&1
+
+export SERVICE=wdt
+export INSTANCENUM=`cat instancenum`
+. /etc/libsh/loadsettings
+
+WDT_DEVICE=${WDT_DEVICE:-"/dev/watchdog"}
+WDT_PERIOD=${WDT_PERIOD:-10}
+WDT_SERVICES=${WDT_SERVICES:-""}
+#WDT_SERVICES="ethminer-amd0 xmrig0"
+
+echo
+echo "Starting with parameters:"
+echo
+env | grep "WDT_"
+echo
+
+#wait device
+while [ ! -c ${WDT_DEVICE} ]; do
+	echo "wait ${WDT_DEVICE} ..."
+	read -t 3
+done < /dev/ptmx
+
+is_svc_ok()
+{
+	ret=`sv status /var/service/$1`
+	if [ "$?" != "0" ]; then
+		return 1
+	fi
+	state=`echo $ret | sed 's/: .*//'` # down run finish
+	case "$state" in
+		"down" )
+			return 1
+		;;
+		"run")
+			wt=`echo $ret | awk '{print $5}' | tr -d 's;'`
+			echo "svc $1: uptime: $wt"
+			if [ $wt -gt $((2*$2)) ];then
+				return 0
+			fi
+			return 1
+		;;
+		"finish" )
+			return 1
+		;;
+		* )
+			return 1
+		;;
+	esac
+	return 1
+}
+
+while [ 1 ]; do
+	ok=true
+	for s in ${WDT_SERVICES}; do
+		if is_svc_ok $s ${WDT_PERIOD}; then
+			continue
+		fi
+		echo "svc $s: status bad"
+		ok=false
+		break
+	done
+	if "$ok" == "true"; then
+		echo "all ok, trig wdt"
+		echo 1 > ${WDT_DEVICE}
+	fi
+	read -t ${WDT_PERIOD}
+done < /dev/ptmx
+

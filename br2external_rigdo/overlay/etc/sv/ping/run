@@ -1,0 +1,26 @@
+#!/bin/sh
+
+exec 2>&1
+
+export SERVICE=ping
+export INSTANCENUM=`cat instancenum`
+. /etc/libsh/loadsettings
+
+PING_TIMEOUT=${PING_TIMEOUT:-10}
+PING_CNT=${PING_CNT:-10}
+PING_SIZE=${PING_SIZE:-56}
+PING_HOST=${PING_HOST-"8.8.8.7"}
+
+echo
+echo "Starting with parameters:"
+echo
+env | grep "PING_"
+echo
+
+while [ 1 ]; do
+	ping -q -W ${PING_TIMEOUT} -c ${PING_CNT} -s ${PING_SIZE} ${PING_HOST}&
+	if wait $!; then
+		continue
+	fi
+	exit 1
+done
