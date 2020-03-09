@@ -6,10 +6,12 @@ export SERVICE=wdt
 export INSTANCENUM=`cat instancenum`
 . /etc/libsh/loadsettings
 
+WDT_MODULE=${WDT_MODULE-"softdog"}
 WDT_DEVICE=${WDT_DEVICE:-"/dev/watchdog"}
 WDT_PERIOD=${WDT_PERIOD:-10}
-WDT_SERVICES=${WDT_SERVICES:-""}
+WDT_SERVICES=${WDT_SERVICES:-"all"}
 #WDT_SERVICES="ethminer-amd0 xmrig0"
+
 
 echo
 echo "Starting with parameters:"
@@ -17,11 +19,30 @@ echo
 env | grep "WDT_"
 echo
 
+#load wdt module
+if [ "${WDT_MODULE}" != "" ]; then
+	modprobe ${WDT_MODULE}
+fi
+
 #wait device
 while [ ! -c ${WDT_DEVICE} ]; do
 	echo "wait ${WDT_DEVICE} ..."
 	read -t 3
 done < /dev/ptmx
+
+check_ethminer()
+{
+	hash_by_card=`echo '{"id":0,"jsonrpc":"2.0","method":"miner_getstat1"}' | nc 127.0.0.1 $1 | awk -F , '{print $6}' | tr -d '"' | tr ';' ' '`
+	idx=0
+	for h in $hash_by_card; do
+		echo "hash for card $idx: $h(KH/s)"
+		if [ $h -lt $2 ]; then
+			return 1
+		fi
+		idx=$(($idx+1))
+	done
+	return 0
+}
 
 is_svc_ok()
 {
@@ -32,39 +53,62 @@ is_svc_ok()
 	state=`echo $ret | sed 's/: .*//'` # down run finish
 	case "$state" in
 		"down" )
+			echo "svc $1: state: $state"
 			return 1
 		;;
 		"run")
 			wt=`echo $ret | awk '{print $5}' | tr -d 's;'`
-			echo "svc $1: uptime: $wt"
-			if [ $wt -gt $((2*$2)) ];then
-				return 0
+			if [ $wt -lt $((2*$2)) ];then
+				echo "svc $1: uptime: $wt"
+				return 1
 			fi
-			return 1
+			if [ "$1" = "ethminer-amd0" ]; then
+				inst=0
+				if ! check_ethminer $((3333+$inst)) 1000; then
+					return 1
+				fi
+			fi
+			if [ "$1" = "ethminer-nvidia0" ]; then
+				inst=0
+				if ! check_ethminer $((3433+$inst)) 1000; then
+					return 1
+				fi
+			fi
+			return 0
 		;;
 		"finish" )
+			echo "svc $1: state: $state"
 			return 1
 		;;
 		* )
+			echo "svc $1: state: $state"
 			return 1
 		;;
 	esac
 	return 1
 }
 
+exec 9> ${WDT_DEVICE}
+
 while [ 1 ]; do
+	if [ "$WDT_SERVICES" == "all" ]; then
+		svcs=`ls /var/service`
+	else
+		svcs=$WDT_SERVICES
+	fi
 	ok=true
-	for s in ${WDT_SERVICES}; do
+	for s in $svcs; do
 		if is_svc_ok $s ${WDT_PERIOD}; then
 			continue
 		fi
-		echo "svc $s: status bad"
 		ok=false
 		break
 	done
 	if "$ok" == "true"; then
-		echo "all ok, trig wdt"
-		echo 1 > ${WDT_DEVICE}
+		echo "ping wdt"
+		echo 1 >&9
+	else
+		echo "skip ping wdt"
 	fi
 	read -t ${WDT_PERIOD}
 done < /dev/ptmx

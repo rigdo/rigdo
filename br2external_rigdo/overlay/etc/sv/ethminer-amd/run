@@ -27,7 +27,8 @@ echo
 set | grep "ETHMINER_"
 echo
 
-opts="-G --HWMON 2 --report-hashrate --exit"
+apiport=$((3333+$INSTANCENUM))
+opts="-G --HWMON 2 --report-hashrate --exit --api-bind 127.0.0.1:${apiport}"
 
 pool="${ETHMINER_POOL:-eu1.ethermine.org:4444}"
 wallet="${ETHMINER_WALLET:-0x00747e59ee64851ecb100d18f3d51878463c0f94}"
