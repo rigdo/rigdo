@@ -9,7 +9,7 @@ export INSTANCENUM=`cat instancenum`
 PING_TIMEOUT=${PING_TIMEOUT:-10}
 PING_CNT=${PING_CNT:-10}
 PING_SIZE=${PING_SIZE:-56}
-PING_HOST=${PING_HOST-"8.8.8.7"}
+PING_HOST=${PING_HOST-"8.8.8.8"}
 
 echo
 echo "Starting with parameters:"
