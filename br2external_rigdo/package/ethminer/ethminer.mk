@@ -4,7 +4,7 @@
 #
 #############################################################
 
-ETHMINER_VERSION = v0.18.0
+ETHMINER_VERSION = master
 ETHMINER_SITE = https://github.com/ethereum-mining/ethminer
 ETHMINER_GIT_SUBMODULES = YES
 ETHMINER_SITE_METHOD = git
