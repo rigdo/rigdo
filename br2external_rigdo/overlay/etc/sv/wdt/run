@@ -35,8 +35,8 @@ check_ethminer()
 	hash_by_card=`echo '{"id":0,"jsonrpc":"2.0","method":"miner_getstat1"}' | nc 127.0.0.1 $1 | awk -F , '{print $6}' | tr -d '"' | tr ';' ' '`
 	idx=0
 	for h in $hash_by_card; do
-		echo "hash for card $idx: $h(KH/s)"
 		if [ $h -lt $2 ]; then
+			echo "hash for card $idx: $h(KH/s) less then $2(KH/s)"
 			return 1
 		fi
 		idx=$(($idx+1))
