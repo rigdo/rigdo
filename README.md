@@ -6,7 +6,7 @@ Build bootable usb flash for mining <br>
 1 Download the latest version of "rigdo" https://github.com/rigdo/usb-flash-uefi/releases/latest  (rigdo_v0.xxx.zip, ~130 MB)<br>
 2 Unzip to USB flash (FAT32) <br>
 3 Change stick name to RIGBOOT <br> 
-4 Download your rig with a stick <br>
+4 Boot your rig using a stick <br>
 #### Video:
 https://youtu.be/PTh6mTiKNck
 
